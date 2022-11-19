@@ -15,6 +15,9 @@ return new class extends Migration
     {
         Schema::create('post_categories', function (Blueprint $table) {
             $table->id();
+            $table->integer('sort_order');
+            $table->string('title');
+            $table->string('slug');
             $table->timestamps();
         });
     }

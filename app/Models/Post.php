@@ -8,4 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
+
+    /**
+     * Each Post can have many categories.
+     *
+     */
+    public function categories()
+    {
+        return $this->belongsToMany('PostCategory')->withTimeStamps();
+    }
+
 }
