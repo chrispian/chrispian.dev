@@ -6,10 +6,12 @@ use App\Filament\Resources\PostResource\Pages;
 use App\Filament\Resources\PostResource\RelationManagers;
 use App\Models\Post;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -25,6 +27,10 @@ class PostResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('author_id')
                     ->required(),
+                Select::make('category')
+                    ->multiple()
+                    ->preload()
+                    ->relationship('categories', 'title'),
                 Forms\Components\TextInput::make('sort_order')
                     ->required(),
                 Forms\Components\TextInput::make('title')
@@ -51,7 +57,7 @@ class PostResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('author_id'),
+                TextColumn::make('author.name'),
                 Tables\Columns\TextColumn::make('sort_order'),
                 Tables\Columns\TextColumn::make('title'),
                 Tables\Columns\TextColumn::make('slug'),
@@ -74,14 +80,14 @@ class PostResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -89,5 +95,5 @@ class PostResource extends Resource
             'create' => Pages\CreatePost::route('/create'),
             'edit' => Pages\EditPost::route('/{record}/edit'),
         ];
-    }    
+    }
 }

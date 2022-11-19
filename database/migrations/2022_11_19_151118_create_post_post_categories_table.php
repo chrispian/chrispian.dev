@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('post_post_categories', function (Blueprint $table) {
+        Schema::create('post_post_category', function (Blueprint $table) {
             $table->id();
             $table->integer('post_id');
             $table->integer('post_category_id');
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('post_post_categories');
+        Schema::dropIfExists('post_post_category');
     }
 };

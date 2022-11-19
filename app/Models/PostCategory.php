@@ -17,7 +17,7 @@ class PostCategory extends Model
      */
     public function posts()
     {
-        return $this->belongsToMany('Post')->withTimeStamps();
+        return $this->belongsToMany(Post::class)->withTimeStamps();
     }
 
 }
