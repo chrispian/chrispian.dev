@@ -15,14 +15,17 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->integer('sort_order');
+            $table->integer('sort_order')->nullable();;
             $table->foreignId('author_id')->constrained('users');
             $table->string('title');
             $table->string('slug');
             $table->text('cover_image')->nullable();
             $table->text('summary');
-            $table->text('content');
+            $table->json('content');
             $table->string('status')->default('draft');
+            $table->foreignId('project_id');
+            $table->foreignId('series_id');
+            $table->json('related_posts')->nullable();
             $table->timestamps();
         });
     }

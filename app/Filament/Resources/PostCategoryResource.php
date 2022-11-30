@@ -5,17 +5,26 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PostCategoryResource\Pages;
 use App\Filament\Resources\PostCategoryResource\RelationManagers;
 use App\Models\PostCategory;
+use Closure;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Str;
 
 class PostCategoryResource extends Resource
 {
     protected static ?string $model = PostCategory::class;
+
+    protected static ?string $navigationGroup = "Posts";
+
+    protected static ?string $label = 'Categories';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
@@ -23,14 +32,24 @@ class PostCategoryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('sort_order')
-                    ->required(),
-                Forms\Components\TextInput::make('title')
+                TextInput::make('title')
                     ->required()
+                    ->afterStateUpdated(function (Closure $get, Closure $set, ?string $state) {
+                        if (! $get('is_slug_changed_manually') && filled($state)) {
+                            $set('slug', Str::slug($state));
+                        }
+                    })
+                    ->reactive()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('slug')
+                TextInput::make('slug')
                     ->required()
+                    ->afterStateUpdated(function (Closure $set) {
+                        $set('is_slug_changed_manually', true);
+                    })
                     ->maxLength(255),
+                Hidden::make('is_slug_changed_manually')
+                      ->default(false)
+                      ->dehydrated(false),
             ]);
     }
 
@@ -38,12 +57,13 @@ class PostCategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('sort_order'),
-                Tables\Columns\TextColumn::make('title'),
-                Tables\Columns\TextColumn::make('slug'),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('title'),
+                TextColumn::make('slug'),
+                TextColumn::make('created_at')
+                    ->label('Created')
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
+                    ->label('Updated')
                     ->dateTime(),
             ])
             ->filters([
@@ -56,14 +76,14 @@ class PostCategoryResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -71,5 +91,5 @@ class PostCategoryResource extends Resource
             'create' => Pages\CreatePostCategory::route('/create'),
             'edit' => Pages\EditPostCategory::route('/{record}/edit'),
         ];
-    }    
+    }
 }
